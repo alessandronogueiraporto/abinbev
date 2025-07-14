@@ -1,0 +1,28 @@
+# Ignore Composer dependencies
+/vendor/
+
+# Ignore Drupal files directory
+/web/sites/*/files/
+
+# Ignore Drupal settings and secrets
+/web/sites/*/settings.php
+/web/sites/*/services.yml
+/web/sites/*/settings.local.php
+
+# Ignore config export sync if managed separately
+/config/sync/
+
+# Ignore Lando-specific files
+.lando/
+.lando.yml
+
+# Ignore IDE/editor config
+.idea/
+.vscode/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
