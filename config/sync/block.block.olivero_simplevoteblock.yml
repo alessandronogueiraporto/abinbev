@@ -1,4 +1,4 @@
-uuid: 21bca764-3eaa-42c6-93f4-f588c2f3205f
+uuid: 4ec6ff6e-bf40-4ce6-b58d-cfc04e867ac6
 langcode: en
 status: true
 dependencies:
@@ -6,7 +6,7 @@ dependencies:
     - simple_vote
   theme:
     - olivero
-id: simplevote_question_01
+id: olivero_simplevoteblock
 theme: olivero
 region: content
 weight: 0

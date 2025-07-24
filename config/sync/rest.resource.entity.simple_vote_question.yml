@@ -1,4 +1,4 @@
-uuid: 4cf79de9-72bf-4a28-b647-cd62ebf5795f
+uuid: e193486f-05cf-4ad8-a493-589c0d1572cb
 langcode: en
 status: true
 dependencies:
@@ -6,8 +6,8 @@ dependencies:
     - basic_auth
     - serialization
     - simple_vote
-id: simple_vote_question_resource
-plugin_id: simple_vote_question_resource
+id: entity.simple_vote_question
+plugin_id: 'entity:simple_vote_question'
 granularity: method
 configuration:
   GET:
