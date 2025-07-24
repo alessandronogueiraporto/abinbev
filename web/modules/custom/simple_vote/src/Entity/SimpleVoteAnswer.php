@@ -28,13 +28,17 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm"
  *     },
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
- *     "views_data" = "Drupal\views\EntityViewsData"
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "route_provider" = {
+ *       "default" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider"
+ *     }
  *   },
  *   links = {
  *     "canonical" = "/api/simple-vote/answers/{simple_vote_answer}",
  *   }
  * )
  */
+
 class SimpleVoteAnswer extends ContentEntityBase {
 
   use EntityChangedTrait;
