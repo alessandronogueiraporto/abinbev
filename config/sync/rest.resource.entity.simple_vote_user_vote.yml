@@ -1,0 +1,19 @@
+uuid: 54ee3163-b2bd-4fdb-82a1-02eec7c83a49
+langcode: en
+status: true
+dependencies:
+  module:
+    - basic_auth
+    - serialization
+    - simple_vote
+id: entity.simple_vote_user_vote
+plugin_id: 'entity:simple_vote_user_vote'
+granularity: resource
+configuration:
+  methods:
+    - GET
+    - POST
+  formats:
+    - json
+  authentication:
+    - basic_auth

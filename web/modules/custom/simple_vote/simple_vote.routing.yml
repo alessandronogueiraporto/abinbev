@@ -1,0 +1,70 @@
+simple_vote.settings:
+  path: '/admin/config/simple_vote/settings'
+  defaults:
+    _form: '\Drupal\simple_vote\Form\SimpleVoteSettingsForm'
+    _title: 'Settings'
+  requirements:
+    _permission: 'administer simple vote'
+  options:
+    _admin_route: TRUE
+
+simple_vote.dashboard:
+  path: '/admin/content/simple-vote'
+  defaults:
+    _controller: '\Drupal\simple_vote\Controller\SimpleVoteDashboardController::dashboard'
+    _title: 'Simple Vote Dashboard'
+  requirements:
+    _permission: 'administer simple vote'
+
+entity.simple_vote_question.canonical:
+  path: '/admin/content/simple-vote/questions/{simple_vote_question}'
+  defaults:
+    _entity_view: 'simple_vote_question.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'simple_vote_question.view'
+  options:
+    parameters:
+      simple_vote_question:
+        type: 'entity:simple_vote_question'
+    _admin_route: TRUE
+
+simple_vote_question.collection:
+  path: '/admin/content/simple-vote/questions'
+  defaults:
+    _entity_list: 'simple_vote_question'
+    _title: 'Simple Vote Questions'
+  requirements:
+    _permission: 'administer simple vote'
+  options:
+    _admin_route: TRUE
+
+simple_vote_question.add:
+  path: '/admin/content/simple-vote/questions/add'
+  defaults:
+    _entity_form: 'simple_vote_question.add'
+    _title: 'Add Simple Vote Question'
+  requirements:
+    _permission: 'administer simple vote'
+  options:
+    _admin_route: TRUE
+
+entity.simple_vote_question.edit_form:
+  path: '/admin/content/simple-vote/questions/{simple_vote_question}/edit'
+  defaults:
+    _entity_form: 'simple_vote_question.edit'
+    _title: 'Edit Question'
+  requirements:
+    _permission: 'administer site content'
+  options:
+    _admin_route: TRUE
+
+entity.simple_vote_question.delete_form:
+  path: '/admin/content/simple-vote/questions/{simple_vote_question}/delete'
+  defaults:
+    _entity_form: 'simple_vote_question.delete'
+    _title: 'Delete Question'
+  requirements:
+    _permission: 'administer site content'
+  options:
+    _admin_route: TRUE
