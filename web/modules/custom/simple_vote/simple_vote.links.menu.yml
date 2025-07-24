@@ -1,0 +1,35 @@
+simple_vote.admin:
+  title: 'Simple Vote'
+  route_name: simple_vote.settings
+  parent: system.admin_config
+  weight: 100
+
+simple_vote.settings:
+  title: 'Settings'
+  description: 'Simple Vote System Settings'
+  parent: simple_vote.admin
+  route_name: simple_vote.settings
+  weight: 0
+
+simple_vote.dashboard:
+  title: 'Simple Vote'
+  description: 'Manage the voting system.'
+  route_name: simple_vote.dashboard
+  parent: system.admin_content
+  weight: 1
+
+simple_vote.question_list:
+  title: 'Questions list'
+  description: 'List of questions.'
+  route_name: simple_vote_question.collection
+  parent: simple_vote.dashboard
+  weight: 2
+
+simple_vote.question_add:
+  title: 'Questions add'
+  description: 'Add a new question.'
+  route_name: simple_vote_question.add
+  parent: simple_vote.dashboard
+  weight: 3
+
+

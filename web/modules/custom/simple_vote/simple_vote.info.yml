@@ -1,0 +1,14 @@
+name: 'Simple Vote'
+type: module
+description: 'Provides a standalone voting system with custom entities, user-facing voting and admin result control.'
+core_version_requirement: ^11
+package: Custom
+
+dependencies:
+  - field
+  - file
+  - image
+  - rest
+  - user
+  - views
+  - system

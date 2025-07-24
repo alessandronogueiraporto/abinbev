@@ -1,0 +1,19 @@
+uuid: bead0087-82d4-49c2-8607-9f269c016b8a
+langcode: en
+status: true
+dependencies:
+  module:
+    - basic_auth
+    - serialization
+    - simple_vote
+id: simple_vote_question_resource
+plugin_id: simple_vote_question_resource
+granularity: resource
+configuration:
+  methods:
+    - GET
+    - POST
+  formats:
+    - json
+  authentication:
+    - basic_auth

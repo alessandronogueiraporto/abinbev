@@ -1,0 +1,37 @@
+name: abinbev
+recipe: drupal11
+
+config:
+  webroot: web
+
+services:
+  appserver:
+    type: php:8.3
+    xdebug: false
+    proxies:
+      - https://abinbev.lndo.site
+    volumes:
+      - ./certs:/certs
+
+  database:
+    type: mariadb:10.6
+    portforward: 3306
+    creds:
+      user: abinbev
+      password: abinbev
+      database: abinbev
+
+  phpmyadmin:
+    type: phpmyadmin
+    portforward: 8080
+    links:
+      - database:db
+
+tooling:
+  drush:
+    service: appserver
+    env:
+      DRUSH_OPTIONS_URI: "https://abinbev.lndo.site"
+
+drush:
+  site-aliases: /app/web/sites/default/drush

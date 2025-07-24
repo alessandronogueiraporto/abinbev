@@ -1,0 +1,6 @@
+services:
+  simple_vote.rest_access_subscriber:
+    class: Drupal\simple_vote\EventSubscriber\SimpleVoteRestAccessSubscriber
+    arguments: ['@config.factory']
+    tags:
+      - { name: event_subscriber }
