@@ -8,10 +8,11 @@ dependencies:
     - simple_vote
 id: entity.simple_vote_question
 plugin_id: 'entity:simple_vote_question'
-granularity: method
+granularity: resource
 configuration:
-  GET:
-    supported_formats:
-      - json
-    supported_auth:
-      - basic_auth
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - basic_auth
