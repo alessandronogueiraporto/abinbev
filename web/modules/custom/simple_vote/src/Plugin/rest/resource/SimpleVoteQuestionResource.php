@@ -6,14 +6,16 @@ use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
 use Drupal\rest\Annotation\RestResource;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * Provides a REST API to return Questions and their Answers with vote counts.
+ *
  * @RestResource(
  *   id = "simple_vote_question_resource",
  *   label = @Translation("Simple Vote - Questions and Answers"),
@@ -22,11 +24,25 @@ use Symfony\Component\HttpFoundation\Request;
  *   }
  * )
  */
-
 class SimpleVoteQuestionResource extends ResourceBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
+
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
   protected $currentUser;
 
+  /**
+   * Constructs a new SimpleVoteQuestionResource object.
+   */
   public function __construct(
     array $configuration,
     $plugin_id,
@@ -34,13 +50,16 @@ class SimpleVoteQuestionResource extends ResourceBase implements ContainerFactor
     array $serializer_formats,
     LoggerInterface $logger,
     AccountProxyInterface $current_user,
-    EntityTypeManagerInterface $entityTypeManager
+    EntityTypeManagerInterface $entity_type_manager
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
-    $this->entityTypeManager = $entityTypeManager;
+    $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
@@ -53,58 +72,80 @@ class SimpleVoteQuestionResource extends ResourceBase implements ContainerFactor
     );
   }
 
-  public function get() {
+  public function get(Request $request) {
     if (!$this->currentUser->hasPermission('access content')) {
       throw new AccessDeniedHttpException();
     }
 
-    $question_storage = $this->entityTypeManager->getStorage('simple_vote_question');
-    $answer_storage = $this->entityTypeManager->getStorage('simple_vote_answer');
-    $vote_storage = $this->entityTypeManager->getStorage('simple_vote_user_vote');
+    $questionStorage = $this->entityTypeManager->getStorage('simple_vote_question');
+    $answerStorage = $this->entityTypeManager->getStorage('simple_vote_answer');
+    $voteStorage = $this->entityTypeManager->getStorage('simple_vote_user_vote');
 
-    $question_ids = $question_storage->getQuery()
-      ->condition('status', 1)
-      ->accessCheck(TRUE)
-      ->execute();
-
-    $questions = $question_storage->loadMultiple($question_ids);
+    $id = $request->query->get('id');
     $data = [];
 
-    foreach ($questions as $question) {
-      $question_data = [
-        'id' => $question->id(),
-        'title' => $question->label(),
-        'machine_name' => $question->get('machine_name')->value,
-      ];
+    if ($id) {
+      $question = $questionStorage->load($id);
 
-      $answer_ids = $answer_storage->getQuery()
-        ->condition('question_id', $question->id())
-        ->accessCheck(TRUE)
-        ->execute();
-
-      $answer_entities = $answer_storage->loadMultiple($answer_ids);
-
-      $answers_data = [];
-      foreach ($answer_entities as $answer) {
-        $vote_count = $vote_storage->getQuery()
-          ->condition('answer_id', $answer->id())
-          ->accessCheck(TRUE)
-          ->count()
-          ->execute();
-
-        $answers_data[] = [
-          'id' => $answer->id(),
-          'title' => $answer->label(),
-          'description' => $answer->get('description')->value,
-          'vote_count' => (int) $vote_count,
-        ];
+      if (!$question || !$question->isPublished()) {
+        return new ResourceResponse(['message' => 'Question not found or unpublished'], 404);
       }
 
-      $question_data['answers'] = $answers_data;
-      $data[] = $question_data;
+      $data[] = $this->buildQuestionData($question, $answerStorage, $voteStorage);
+    }
+    else {
+      $page = (int) $request->query->get('page', 0);
+      $limit = (int) $request->query->get('limit', 2);
+      $limit = max(1, min($limit, 50));
+
+      $query = $questionStorage->getQuery()
+        ->condition('status', 1)
+        ->accessCheck(TRUE)
+        ->range($page * $limit, $limit);
+
+      $questionIds = $query->execute();
+      $questions = $questionStorage->loadMultiple($questionIds);
+
+      foreach ($questions as $question) {
+        $data[] = $this->buildQuestionData($question, $answerStorage, $voteStorage);
+      }
     }
 
     return new ResourceResponse($data);
+  }
+
+  protected function buildQuestionData($question, $answerStorage, $voteStorage) {
+    $questionData = [
+      'id' => $question->id(),
+      'title' => $question->label(),
+      'machine_name' => $question->get('machine_name')->value,
+    ];
+
+    $answerIds = $answerStorage->getQuery()
+      ->condition('question_id', $question->id())
+      ->accessCheck(TRUE)
+      ->execute();
+
+    $answers = $answerStorage->loadMultiple($answerIds);
+    $answersData = [];
+
+    foreach ($answers as $answer) {
+      $voteCount = $voteStorage->getQuery()
+        ->condition('answer_id', $answer->id())
+        ->accessCheck(TRUE)
+        ->count()
+        ->execute();
+
+      $answersData[] = [
+        'id' => $answer->id(),
+        'title' => $answer->label(),
+        'description' => $answer->get('description')->value,
+        'vote_count' => (int) $voteCount,
+      ];
+    }
+
+    $questionData['answers'] = $answersData;
+    return $questionData;
   }
 
 }
