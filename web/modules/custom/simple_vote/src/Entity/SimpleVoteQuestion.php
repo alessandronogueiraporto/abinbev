@@ -38,11 +38,11 @@ use Drupal\Core\Entity\EntityPublishedInterface;
  *     "rest" = "Drupal\rest\Plugin\RestEntityRouteProvider"
  *   },
  *   links = {
- *     "canonical" = "/api/simple-vote/answers/{simple_vote_answer}",
- *     "add-form" = "/api/simple-vote/answers/add",
- *     "edit-form" = "/api/simple-vote/answers/{simple_vote_answer}/edit",
- *     "delete-form" = "/api/simple-vote/answers/{simple_vote_answer}/delete",
- *     "collection" = "/api/simple-vote/answers"
+ *     "canonical" = "/api/simple-vote/question/{simple_vote_question}",
+ *     "add-form" = "/api/simple-vote/question/add",
+ *     "edit-form" = "/api/simple-vote/question/{simple_vote_question}/edit",
+ *     "delete-form" = "/api/simple-vote/question/{simple_vote_question}/delete",
+ *     "collection" = "/api/simple-vote/question"
  *   },
  *   field_ui_base_route = "entity.simple_vote_question.settings"
  * )
@@ -59,7 +59,6 @@ class SimpleVoteQuestion extends ContentEntityBase implements EntityPublishedInt
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    // Title of the question.
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))
       ->setRequired(TRUE)
@@ -70,13 +69,6 @@ class SimpleVoteQuestion extends ContentEntityBase implements EntityPublishedInt
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['description'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(t('Description'))
-      ->setDisplayOptions('form', ['type' => 'text_textarea', 'weight' => 1])
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);
-
-    // Machine name (unique identifier).
     $fields['machine_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Machine Name'))
       ->setRequired(TRUE)
@@ -91,7 +83,6 @@ class SimpleVoteQuestion extends ContentEntityBase implements EntityPublishedInt
       ])
       ->setDisplayConfigurable('form', TRUE);
 
-    // Show results after voting?
     $fields['show_results'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Show results after voting'))
       ->setDefaultValue(TRUE)
@@ -101,7 +92,6 @@ class SimpleVoteQuestion extends ContentEntityBase implements EntityPublishedInt
       ])
       ->setDisplayConfigurable('form', TRUE);
 
-    // Author (user reference).
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Author'))
       ->setSetting('target_type', 'user')
@@ -112,14 +102,11 @@ class SimpleVoteQuestion extends ContentEntityBase implements EntityPublishedInt
       ])
       ->setDisplayConfigurable('form', TRUE);
 
-    // Published status.
     $fields += static::publishedBaseFieldDefinitions($entity_type);
 
-    // Created timestamp.
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'));
 
-    // Changed timestamp.
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed'));
 

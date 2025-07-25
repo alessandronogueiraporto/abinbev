@@ -29,9 +29,12 @@ class SimpleVoteRestAccessSubscriber implements EventSubscriberInterface {
     $config = $this->configFactory->get('simple_vote.settings');
     if (!$config->get('enabled')) {
       $restricted_paths = [
-        '/api/simple-vote-questions',
-        '/entity/simple_vote_question',
+        '/api/simple-vote/answer/',
+        '/api/simple-vote/question/',
+        '/api/simple-vote/question-answer',
+        '/api/simple-vote/simple_vote_user_vote/',
         '/entity/simple_vote_answer',
+        '/entity/simple_vote_question',
         '/entity/simple_vote_user_vote',
       ];
 

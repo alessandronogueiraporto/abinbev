@@ -13,7 +13,7 @@ use Drupal\user\UserInterface;
  *
  * @ContentEntityType(
  *   id = "simple_vote_user_vote",
- *   label = @Translation("Simple Vote - User Vote"),
+ *   label = @Translation("User Vote"),
  *   base_table = "simple_vote_user_vote",
  *   admin_permission = "administer simple vote",
  *   entity_keys = {
@@ -29,21 +29,26 @@ use Drupal\user\UserInterface;
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm"
  *     },
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder"
+ *   },
+ *   links = {
+ *     "canonical" = "/api/simple-vote/simple_vote_user_vote/{simple_vote_user_vote}",
+ *     "collection" = "/api/simple-vote/simple_vote_user_vote"
  *   }
  * )
  */
+
 class SimpleVoteUserVote extends ContentEntityBase implements EntityOwnerInterface {
 
   /**
-   * Defines the entity fields.
+   * Define os campos da entidade.
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    // UID of the logged in user.
+    // UID do usuário logado.
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('User'))
-      ->setDescription(t('Reference to the authenticated user who voted.'))
+      ->setLabel(t('Usuário'))
+      ->setDescription(t('Referência ao usuário autenticado que votou.'))
       ->setSetting('target_type', 'user')
       ->setDefaultValueCallback(static::class . '::getCurrentUserId')
       ->setDisplayOptions('form', [
@@ -53,10 +58,10 @@ class SimpleVoteUserVote extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('form', TRUE)
       ->setRequired(FALSE);
 
-    // Identifier for anonymous users.
+    // Identificador para usuários anônimos.
     $fields['anonymous_id'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Anonymous Identifier'))
-      ->setDescription(t('A unique identifier (fingerprint) for unauthenticated users.'))
+      ->setLabel(t('Identificador Anônimo'))
+      ->setDescription(t('Um identificador único (cookie ou fingerprint) para usuários não autenticados.'))
       ->setSettings([
         'max_length' => 128,
         'text_processing' => 0,
@@ -68,50 +73,50 @@ class SimpleVoteUserVote extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('form', TRUE)
       ->setRequired(FALSE);
 
-    // Associated question.
+    // Pergunta associada.
     $fields['question_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Question'))
-      ->setDescription(t('Voting related question.'))
+      ->setLabel(t('Pergunta'))
+      ->setDescription(t('Pergunta relacionada ao voto.'))
       ->setSetting('target_type', 'simple_vote_question')
       ->setRequired(TRUE);
 
-    // Chosen answer.
+    // Resposta escolhida.
     $fields['answer_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Response'))
-      ->setDescription(t('User selected answer.'))
+      ->setLabel(t('Resposta'))
+      ->setDescription(t('Resposta selecionada pelo usuário.'))
       ->setSetting('target_type', 'simple_vote_answer')
       ->setRequired(TRUE);
 
-    // Date of creation.
+    // Data de criação.
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created in'));
+      ->setLabel(t('Criado em'));
 
     return $fields;
   }
 
   /**
-   * Sets default value of uid field for authenticated users.
+   * Define valor padrão do campo uid para usuários autenticados.
    */
   public static function getCurrentUserId() {
     return [\Drupal::currentUser()->id()];
   }
 
   /**
-   * Implements EntityOwnerInterface::getOwner().
+   * Implementa EntityOwnerInterface::getOwner().
    */
   public function getOwner(): UserInterface {
     return $this->get('uid')->entity;
   }
 
   /**
-   * Implements EntityOwnerInterface::getOwnerId().
+   * Implementa EntityOwnerInterface::getOwnerId().
    */
   public function getOwnerId(): int {
     return $this->get('uid')->target_id ?? 0;
   }
 
   /**
-   * Implements EntityOwnerInterface::setOwnerId().
+   * Implementa EntityOwnerInterface::setOwnerId().
    */
   public function setOwnerId($uid): static {
     $this->set('uid', $uid);
@@ -119,7 +124,7 @@ class SimpleVoteUserVote extends ContentEntityBase implements EntityOwnerInterfa
   }
 
   /**
-   * Implements EntityOwnerInterface::setOwner().
+   * Implementa EntityOwnerInterface::setOwner().
    */
   public function setOwner(UserInterface $account): static {
     $this->set('uid', $account->id());
