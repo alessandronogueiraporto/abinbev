@@ -28,7 +28,6 @@ class SimpleVoteQuestionViewBuilder extends EntityViewBuilder {
 
     $entity_type_manager = \Drupal::entityTypeManager();
 
-    // Load associated responses
     $answer_storage = $entity_type_manager->getStorage('simple_vote_answer');
     $answer_ids = $answer_storage->getQuery()
       ->accessCheck(TRUE)
@@ -37,7 +36,6 @@ class SimpleVoteQuestionViewBuilder extends EntityViewBuilder {
       ->execute();
     $answers = $answer_storage->loadMultiple($answer_ids);
 
-    // Load votes
     $vote_storage = $entity_type_manager->getStorage('simple_vote_user_vote');
     $vote_ids = $vote_storage->getQuery()
       ->accessCheck(TRUE)
@@ -65,7 +63,6 @@ class SimpleVoteQuestionViewBuilder extends EntityViewBuilder {
         }
       }
 
-      // Use base image or icon style
       if ($image_uri) {
         $image_url = ImageStyle::load('thumbnail')->buildUrl($image_uri);
       }

@@ -9,9 +9,6 @@ use Drupal\Core\Controller\ControllerBase;
  */
 class SimpleVoteDashboardController extends ControllerBase {
 
-  /**
-   * Returns the dashboard page content.
-   */
   public function dashboard() {
     return [
       '#type' => 'markup',
