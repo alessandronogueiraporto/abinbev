@@ -113,9 +113,6 @@ class SimpleVoteQuestion extends ContentEntityBase implements EntityPublishedInt
     return $fields;
   }
 
-  /**
-   * Returns the current user ID as default author.
-   */
   public static function getCurrentUserId() {
     return \Drupal::currentUser()->id();
   }

@@ -32,9 +32,6 @@ class SimpleVoteForm extends FormBase {
    */
   protected $messenger;
 
-  /**
-   * Custom constructor for dependency injection.
-   */
   public function __construct(AccountInterface $currentUser, MessengerInterface $messenger) {
     $this->currentUser = $currentUser;
     $this->messenger = $messenger;
@@ -47,16 +44,10 @@ class SimpleVoteForm extends FormBase {
     );
   }
 
-  /**
-   * Sets the form ID.
-   */
   public function getFormId() {
     return 'simple_vote_vote_form';
   }
 
-  /**
-   * Receives the question to render the form.
-   */
   public function buildForm(array $form, FormStateInterface $form_state, $question = NULL) {
     if (!$question) {
       $form['#markup'] = $this->t('Pergunta não encontrada.');
@@ -65,9 +56,6 @@ class SimpleVoteForm extends FormBase {
 
     $this->question = $question;
 
-    /**
-     * Receives the question to render the form.
-     */
     $answer_storage = \Drupal::entityTypeManager()->getStorage('simple_vote_answer');
     $answer_ids = $answer_storage->getQuery()
       ->accessCheck(TRUE)
@@ -77,9 +65,6 @@ class SimpleVoteForm extends FormBase {
 
     $answers = $answer_storage->loadMultiple($answer_ids);
 
-    /**
-     * Options for radio buttons..
-     */
     $options = [];
     foreach ($answers as $answer) {
       $options[$answer->id()] = $answer->label();
@@ -114,9 +99,6 @@ class SimpleVoteForm extends FormBase {
     return $form;
   }
 
-  /**
-   * Form validation to prevent multiple votes.
-   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $answer_id = $form_state->getValue('answer');
 
@@ -124,12 +106,10 @@ class SimpleVoteForm extends FormBase {
     $query = $storage->getQuery()
     ->accessCheck(TRUE);
 
-    // If user logged in, check vote by uid.
     if ($this->currentUser->isAuthenticated()) {
       $query->condition('uid', $this->currentUser->id());
     }
     else {
-      // For anonymous, IP.
       $ip = \Drupal::request()->getClientIp();
       $query->condition('anonymous_id', $ip);
     }
@@ -142,9 +122,6 @@ class SimpleVoteForm extends FormBase {
     }
   }
 
-  /**
-   * Submission of the form recording the vote.
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $answer_id = $form_state->getValue('answer');
 
