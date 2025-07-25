@@ -16,9 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @RestResource(
  *   id = "simple_vote_question_resource",
- *   label = @Translation("Simple Vote - Question Resource"),
+ *   label = @Translation("Simple Vote - Questions and Answers"),
  *   uri_paths = {
- *     "canonical" = "/api/simple-vote-questions"
+ *     "canonical" = "/api/simple-vote/question-answer"
  *   }
  * )
  */
@@ -107,31 +107,4 @@ class SimpleVoteQuestionResource extends ResourceBase implements ContainerFactor
     return new ResourceResponse($data);
   }
 
-  /**
-   * Handle POST: Register a vote for an answer.
-   */
-  public function post(array $data) {
-    if (!$this->currentUser->hasPermission('access content')) {
-      throw new AccessDeniedHttpException();
-    }
-
-    if (empty($data['answer_id'])) {
-      throw new \InvalidArgumentException('Missing answer_id in request.');
-    }
-
-    $answer_storage = $this->entityTypeManager->getStorage('simple_vote_answer');
-    $answer = $answer_storage->load($data['answer_id']);
-    if (!$answer) {
-      throw new \InvalidArgumentException('Invalid answer_id.');
-    }
-
-    $vote_storage = $this->entityTypeManager->getStorage('simple_vote_user_vote');
-    $vote = $vote_storage->create([
-      'answer_id' => $data['answer_id'],
-      'user_id' => $this->currentUser->id(),
-    ]);
-    $vote->save();
-
-    return new ResourceResponse(['message' => 'Vote registered successfully.'], 201);
-  }
 }
